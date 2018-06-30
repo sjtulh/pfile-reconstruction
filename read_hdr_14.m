@@ -74,11 +74,7 @@ fseek(fid, hdr.mrdata_off+172, 'bof');
 hdr.user14 = fread(fid, 1, 'float');	% opuser14 variable
 fseek(fid, hdr.mrdata_off+340, 'bof');
 hdr.user39 = fread(fid, 1, 'float');	% user39
-if floor(hdr.version) == 24         % chens
-    fseek(fid, hdr.mrdata_off+680,'bof');
-else
-    fseek(fid, hdr.mrdata_off+440, 'bof');
-end
+fseek(fid, hdr.mrdata_off+440, 'bof');
 hdr.N_hor = fread(fid, 1, 'float');	% Number of pixels horizontally, dim_X(freq)
 hdr.N_ver = fread(fid, 1, 'float');	% Number of pixels vertically, dim_Y(phase)
 fseek(fid, hdr.mrdata_off+480, 'bof');
@@ -102,21 +98,10 @@ hdr.z_br = fread(fid, 1, 'float')/10;	% z coord. (cm, brhc_S)
 fseek(fid, hdr.mrdata_off+704, 'bof');
 %format long hdr.stamp
 %hdr.stamp = fread(fid, 1, 'integer*4');	% Time stamp
-
-if floor(hdr.version) == 24         % chens
-    fseek(fid, hdr.mrdata_off+1056,'bof');
-else
-    fseek(fid, hdr.mrdata_off+712, 'bof');
-end
+fseek(fid, hdr.mrdata_off+712, 'bof');
 hdr.TR = fread(fid, 1, 'integer*4');	% Repetition time (us, tr)
-
-if floor(hdr.version) == 24         % chens
-    fseek(fid, hdr.mrdata_off+1064,'bof');
-else
-    fseek(fid, hdr.mrdata_off+720, 'bof');
-end
+fseek(fid, hdr.mrdata_off+720, 'bof');
 hdr.TE = fread(fid, 1, 'integer*4');	% Echo time (us, te)
-
 fseek(fid, hdr.mrdata_off+824, 'bof');
 hdr.time = fread(fid, 1, 'integer*4');	% Number of phases (i.e. time frames, fphase)
 fseek(fid, hdr.mrdata_off+1020, 'bof');
