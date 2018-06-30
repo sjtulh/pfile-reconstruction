@@ -1,12 +1,12 @@
 % Read the header of a P file (version 24).
-% liuhang, 2018/6/28
+% liuhang, 2018/6/30
 
-clear all;
-Pfile = 'F:\sd\mri\pfile reconstruction\data\version 24\dicom_data\breast_coil\P50176.7';
-fid=fopen(Pfile,'r', 'ieee-le');
+% clear all;
+% Pfile = 'F:\sd\mri\pfile reconstruction\data\version 24\dicom_data\breast_coil\P50176.7';
+% fid=fopen(Pfile,'r', 'ieee-le');
 % hdr = read_hdr_24(fid);
 
-% function hdr = read_hdr_24(fid)
+function hdr = read_hdr_24(fid)
 fseek(fid, 0, 'bof');
 hdr.version = fread(fid, 1, 'float');
 fseek(fid, 12, 'cof');
@@ -41,42 +41,20 @@ hdr.bandwidth = fread(fid, 1, 'float');
 hdr.data_size = fread(fid, 1, 'ulong');
 hdr.ssp_save = fread(fid, 1, 'ulong');  
 hdr.uda_save = fread(fid, 1, 'ulong');
-% fseek(fid, 139680, 'cof');
-% hdr.aps_r1 = fread(fid, 1, 'int');
-% hdr.aps_r2 = fread(fid, 1, 'int');
-% hdr.aps_tg = fread(fid, 1, 'int');
-fseek(fid, 139680+12, 'cof');
+fseek(fid, 139692, 'cof');
 fp_freq = ftell(fid);
 hdr.aps_frequency = fread(fid, 1, 'uint')/1e7;
-% hdr.scale_i = fread(fid, 1, 'float');
-% hdr.scale_q = fread(fid, 1, 'float');
-% fseek(fid, 276, 'cof');
-% hdr.x_shim = fread(fid, 1, 'short');
-% hdr.y_shim = fread(fid, 1, 'short');
-% hdr.z_shim = fread(fid, 1, 'short');
-% hdr.recon_enabled = fread(fid, 1, 'short');
-fseek(fid, 8+276+8+1744, 'cof');
+fseek(fid, 2036, 'cof');
 hdr.magnet_strength = fread(fid, 1, 'int')/1e4;
 hdr.patient_weight = fread(fid, 1, 'int')/1e3;
-% hdr.exam_timestamp = fread(fid, 1, 'int');
-fseek(fid, 4+112, 'cof');
+fseek(fid, 116, 'cof');
 fp_ex_no = ftell(fid);
 hdr.exam_number = fread(fid, 1, 'ushort');
 fseek(fid, 18, 'cof');
 hdr.patient_age = fread(fid, 1, 'short');
 fseek(fid, 2, 'cof');
 hdr.patient_sex = fread(fid, 1, 'short');
-% fseek(fid, 2, 'cof');
-% hdr.patient_trauma = fread(fid, 1, 'short');
-% fseek(fid, 2, 'cof');
-% hdr.study_status = fread(fid, 1, 'short');
-fseek(fid, 8+70, 'cof');
-% hdr.history = fread(fid, 257, '*char');
-% hdr.referring_physicians_name = fread(fid, 65, '*char');
-% hdr.radiologists_name = fread(fid, 65, '*char');
-% hdr.operators_name = fread(fid, 65, '*char');
-% hdr.exam_description = fread(fid, 65, '*char');
-fseek(fid, 257+65*4, 'cof');
+fseek(fid, 595, 'cof');
 hdr.exam_type = deblank( fread(fid, [1, 3], '*char'));
 hdr.system_id = deblank( fread(fid, [1, 9], '*char'));
 fseek(fid, 22, 'cof');
@@ -86,14 +64,10 @@ hdr.service_id = deblank( fread(fid, [1, 16], '*char'));
 fseek(fid, 100, 'cof');
 hdr.patient_name = deblank( fread(fid, [1, 65], '*char'));
 hdr.patient_id = deblank( fread(fid, [1, 65], '*char'));
-% hdr.req_num = fread(fid, 17, '*char');
-% hdr.date_of_birth = fread(fid, 9, '*char');
-fseek(fid, 17+9+552, 'cof');
+fseek(fid, 578, 'cof');
 hdr.start_location = fread(fid, 1, 'float');
 hdr.end_location = fread(fid, 1, 'float');
-% fseek(fid, 352, 'cof');
-% hdr.series_timestamp = fread(fid, 1, 'int');
-fseek(fid, 352+4+206, 'cof');
+fseek(fid, 562, 'cof');
 hdr.series_number = fread(fid, 1, 'short');
 fseek(fid, 138, 'cof');
 hdr.series_description = deblank( fread(fid, [1, 65], '*char'));
@@ -107,9 +81,7 @@ hdr.y_fov = fread(fid, 1, 'float')/10;
 hdr.scan_duration = fread(fid, 1, 'float');
 fp=ftell(fid);
 hdr.thickness = fread(fid, 1, 'float')/10;
-fseek(fid, 14, 'cof');
-hdr.scanspacing = fread(fid, 1, 'float');
-% hdr.scanspacing = fread(fid, [1,400], 'uint8');
+% hdr.scanspacing = fread(fid, 1, 'float');
 % scanspacing找不到
 fseek(fid, 360, 'cof');
 hdr.x_dim = fread(fid, 1, 'float');   %N_hor, Number of pixels horizontally
@@ -141,10 +113,9 @@ hdr.maty = fread(fid, 1, 'integer*2');
 fseek(fid, 128, 'cof');
 hdr.frequency_direction = fread(fid, 1, 'short');
 fseek(fid, 130, 'cof');
-hdr.psd_name = deblank( fread(fid, [1, 33], '*char'));
+hdr.psd_name = deblank( fread(fid, [1, 33], '*char'));   %最后几个字符乱码
 fseek(fid, 84, 'cof');
-hdr.coil_name = deblank( fread(fid, [1, 17], '*char'));   %最后几个字符乱码
+hdr.coil_name = deblank( fread(fid, [1, 17], '*char'));
 fseek(fid, 115, 'cof');
 hdr.long_coil_name = deblank( fread(fid, [1, 24], '*char'));
-
-% end
+end
