@@ -112,7 +112,10 @@ fseek(fid, hdr.mrdata_off+1070, 'bof');
 %% Riad found 720 for cphase
 hdr.cphase = fread(fid, 1, 'integer*2');% Number of cardiac phases
 fseek(fid, hdr.mrdata_off+1100, 'bof');
-hdr.N_sl = fread(fid, 1, 'integer*2');	% Number of slices (slquant)
+hdr.nslices = fread(fid, 1, 'integer*2');	% Number of slices (slquant)
+hdr.nechoes = fread(fid, 1, 'int16');
+fseek(fid, hdr.mrdata_off+1114, 'bof');
+hdr.point_size = fread(fid, 1, 'int16');  % rhptsize 2 - 4 
 fseek(fid, hdr.mrdata_off+1178, 'bof');
 hdr.vps = fread(fid, 1, 'integer*2');	% Number of views per segment (viewsperseg)
 fseek(fid, hdr.mrdata_off+1272, 'bof');
@@ -127,30 +130,3 @@ hdr.coil_name = fread(fid, 17, 'char');	% Coil name
 hdr.loc_ras = char(hdr.loc_ras)';
 hdr.coil_name = char(hdr.coil_name)';
 hdr.ras0 = char(hdr.ras0)';
-% Close the file
-%fclose(fid);
-
-% Some of the values read in the header may require corrections
-hdr.nph = max([hdr.time hdr.cphase]);
-if hdr.nph == 0				% Not defined (=0) when just 1 phase
-   hdr.nph = 1;	
-end
-if hdr.N_sl == 0			% If not defined, should presumably be 1
-   hdr.N_sl = 1;	
-end
-if hdr.fov_ph == 0			% Not set, which means same as freq
-   hdr.fov_ph = hdr.fov_fr;
-else
-   if hdr.fov_fr ~= hdr.fov_ph		% Asymetric FOV,
-      hdr.N_ver = hdr.N_ver * ...	% N_ver needs correction
-      hdr.fov_ph/hdr.fov_fr;
-   end
-end
-% if hdr.scanspacing == 0     % Meic: 3D sequence 
-%     hdr.N_sl = hdr.N_sl + 4; 
-% end
-% Parameters calculated (instead of read)
-hdr.ncoils = hdr.stop_rcv - ...		% Number of coils in array
-hdr.start_rcv + 1;
-hdr.scale = hdr.N_hor * hdr.N_ver;	% FFT scaling factor
-

@@ -2,14 +2,14 @@
 % usage:    [result hdr raw_data] = rmsrecon(vers, chp, Pfile, N_sl, nph, necho, rms);
 %                                                    rms=1: rms of coils
 
-function [result,hdr,raw_data] = rmsrecon(vers, chp, Pfile, nph, rms, necho)
+function [result,hdr,raw_data] = rmsrecon(Pfile, chp, rms)
 %Pfile = ['/disk/meic/pfiles/011908/P04096.7'];
 %[hdr, raw_data] = read_Pfile(Pfile); 
 %addpath D:\Research\mei' matlab code'\
-if nargin == 6 && exist('necho','var')==0, necho = 1; end;
-[hdr, raw_data] = read_mPfile(vers, chp, Pfile, N_sl, nph, necho);%(N_sl, nph)
-raw_data_temp = ifftshift(ifftshift(raw_data,1),2);
-result = ifftshift(ifftshift(ifft(ifft(raw_data_temp,[],1),[],2),1),2);
+[hdr, raw_data] = read_mPfile(Pfile, chp);
+result_temp = ifftshift(fft2(fftshift(raw_data, 2)), 2);
+result = flipud(rot90(result_temp));   %调整方向
+
 if rms == 1;
    result = squeeze(sqrt(sum(abs(result).^2,4))); 
    %im(result,111);colormap(gray);
